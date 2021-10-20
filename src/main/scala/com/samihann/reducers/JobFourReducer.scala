@@ -1,0 +1,45 @@
+package com.samihann.reducers
+
+/*
+Create by Samihan Nandedkar
+CS441 | Fall 2021
+*/
+
+import org.apache.hadoop.conf.Configuration
+import org.apache.hadoop.fs.Path
+import org.apache.hadoop.io.{IntWritable, Text}
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
+import org.apache.hadoop.mapreduce.{Job, Mapper, Reducer}
+import org.slf4j.{Logger, LoggerFactory}
+
+import java.lang.Iterable
+import java.util.StringTokenizer
+import scala.collection.JavaConverters.*
+import scala.util.matching.Regex
+
+class JobFourReducer extends Reducer[Text,IntWritable,Text,IntWritable] {
+  // Logger
+  val log: Logger = LoggerFactory.getLogger(getClass)
+
+  // Main Reduce function
+  override def reduce(key: Text, values: Iterable[IntWritable], context: Reducer[Text, IntWritable, Text, IntWritable]#Context): Unit = {
+    log.info("Starting the Reducer for Job 4")
+
+    /***
+     * values is iterable structure containing character sizes
+     * for all the messages for each type.
+     *
+     * We are iterating through the list with foldLeft and comparing them with each other
+     * using (_ max _.get)
+     *
+     * .get in above given expression is given to convert IntWritable to Int.
+     *
+     *
+     */
+    val max = values.asScala.foldLeft(0)(_ max _.get)
+
+    // Write the values in Context.
+    context.write(key, new IntWritable(max))
+  }
+}
