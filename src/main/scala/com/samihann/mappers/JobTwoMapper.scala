@@ -46,6 +46,15 @@ class JobTwoMapper extends Mapper[Object, Text, Text, IntWritable] {
   val timeInterval: Int = config.getInt("configuration.timeInterval")
   log.info("Time interval imported from Configuration")
 
+  /***
+   * Var is utilized here.
+   * This is done as to calculate the multiple intervals of designated time duration.
+   * The start time and end time dynamically changing as more lines are passed.
+   * TO keep track of a single start and ent time for a particular interval var is used here.
+   *
+   */
+  var st = new LocalTime()
+  var et = new LocalTime(0,0,0,000)
   // Map Function
     override def map(key: Object, value: Text, context: Mapper[Object, Text, Text, IntWritable]#Context): Unit = {
       log.info("Starting Map Function for Job 2")
@@ -57,8 +66,7 @@ class JobTwoMapper extends Mapper[Object, Text, Text, IntWritable] {
       val pattern = config.getString("configuration.job2Pattern").r
       val time = config.getString("configuration.timeRegex").r
       log.info("Imported the parameters from Configuration and converted it to regex")
-      var st = new LocalTime()
-      var et = new LocalTime(0,0,0,000)
+
       // Iterated while new lines are present.
       while (itr.hasMoreTokens()) {
         val newLine = itr.nextToken() // Assign newLine the string for next log message
@@ -76,9 +84,10 @@ class JobTwoMapper extends Mapper[Object, Text, Text, IntWritable] {
           case Some(t) => {
             // Parse the time string
             val lt = LocalTime.parse(t)
+
             if (lt > et){
               st = lt
-              et = lt.plusMinutes(timeInterval)
+              et = st.plusMinutes(timeInterval)
             }
             // Check if the time lies in the given predefined time frame
             if((lt>=st) && (lt<=et)){
@@ -87,7 +96,7 @@ class JobTwoMapper extends Mapper[Object, Text, Text, IntWritable] {
                   // Set line as the message Type
                   val x = et.toString()
                   val y = st.toString()
-                  line.set(y+"TO"+x)
+                  line.set(y+" TO "+x)
                   matchpresent match {
                     // If pattern is present for that message type
                     case Some(k) => {context.write(line,one)}

@@ -1,16 +1,22 @@
 package com.samihann
 
+/*
+Created by Samihan Nandedkar
+CS441
+Fall 2021
+*/
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
-import org.apache.hadoop.io.{IntWritable, Text}
-import org.apache.hadoop.mapreduce.lib.input.{FileInputFormat, KeyValueTextInputFormat}
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
+import org.apache.hadoop.io.{IntWritable, LongWritable, Text}
+import org.apache.hadoop.mapreduce.lib.input.{FileInputFormat, KeyValueTextInputFormat, SequenceFileInputFormat}
+import org.apache.hadoop.mapreduce.lib.output.{FileOutputFormat, SequenceFileOutputFormat}
 import org.apache.hadoop.mapreduce.{Job, Mapper, Reducer}
 import com.samihann.mappers.{JobFourMapper, JobOneMapper, JobThreeMapper, JobTwoFinalMapper, JobTwoMapper}
 import com.samihann.reducers.{JobFourReducer, JobOneReducer, JobThreeReducer, JobTwoFinalReducer, JobTwoReducer}
 import org.slf4j.{Logger, LoggerFactory}
 import org.apache.hadoop.mapreduce.lib.jobcontrol.ControlledJob
 import org.apache.hadoop.mapreduce.lib.jobcontrol.JobControl
+
 
 object DriverClass {
   def main(args: Array[String]): Unit = {
@@ -25,7 +31,7 @@ object DriverClass {
     val JobOneConf = new Configuration
     // To generate the output of Map Reduce as Scala.
     JobOneConf.set("mapred.textoutputformat.separatorText", ",")
-    val job1 = Job.getInstance(JobOneConf,"Pattern Search in a time frame")
+    val job1 = Job.getInstance(JobOneConf,"JOB 1")
     job1.setJarByClass(this.getClass)
     job1.setMapperClass(classOf[JobOneMapper])
     job1.setCombinerClass(classOf[JobOneReducer])
@@ -35,7 +41,6 @@ object DriverClass {
     job1.setOutputValueClass(classOf[IntWritable]);
     FileInputFormat.addInputPath(job1, new Path(args(0)))
     FileOutputFormat.setOutputPath(job1, new Path(args(1)+"/job1"))
-    log.info("********** EXECUTION OF JOB 1 COMPLETED *************")
 
 
     log.info("********** Job 2 to be executed  *************")
@@ -43,47 +48,19 @@ object DriverClass {
     // Instance of Hadoop Configuration
     val JobTwoConf = new Configuration
     // To generate the output of Map Reduce as Scala.
-    JobTwoConf.set("mapred.textoutputformat.separatorText", ",")
-    val job2 = Job.getInstance(JobTwoConf,"Pattern Search across the file")
+    val job2 = Job.getInstance(JobTwoConf,"JOB 2")
     job2.setJarByClass(this.getClass)
     job2.setMapperClass(classOf[JobTwoMapper])
     job2.setCombinerClass(classOf[JobTwoReducer])
     job2.setReducerClass(classOf[JobTwoReducer])
-    job2.setOutputKeyClass(classOf[Text])
+    job2.setMapOutputKeyClass(classOf[Text])
+    job2.setMapOutputValueClass(classOf[IntWritable])
     job2.setOutputKeyClass(classOf[Text]);
     job2.setOutputValueClass(classOf[IntWritable]);
     FileInputFormat.addInputPath(job2, new Path(args(0)))
     FileOutputFormat.setOutputPath(job2,  new Path(args(1)+"/job2"))
     val jobTwoControl = new ControlledJob(JobTwoConf)
 
-
-//    log.info("********** STARTING EXECUTION OF JOB 2 Final  *************")
-//    // Job 2: Perform Map Reduce on the input
-//    // Instance of Hadoop Configuration
-//    val JobTwoFConf = new Configuration
-//    // To generate the output of Map Reduce as Scala.
-//    JobTwoFConf.set("mapred.textoutputformat.separatorText", ",")
-//    val job2f = Job.getInstance(JobTwoFConf,"Pattern Search across the file")
-//    job2f.setJarByClass(this.getClass)
-//    job2f.setMapperClass(classOf[JobTwoFinalMapper])
-//    job2f.setCombinerClass(classOf[JobTwoFinalReducer])
-//    job2f.setReducerClass(classOf[JobTwoFinalReducer])
-//    job2f.setInputFormatClass(classOf[KeyValueTextInputFormat]);
-//    job2f.setOutputKeyClass(classOf[Text])
-//    job2f.setOutputKeyClass(classOf[Text]);
-//    job2f.setOutputValueClass(classOf[IntWritable]);
-//    FileInputFormat.addInputPath(job2f,  new Path(args(1)+"/job2/intermediate"))
-//    FileOutputFormat.setOutputPath(job2f,  new Path(args(1)+"/job2/final"))
-//    val jobTwoFControl = new ControlledJob(JobTwoFConf)
-//    log.info("********** EXECUTION OF JOB 2 Final COMPLETED *************")
-//
-//    jobTwoFControl.addDependingJob(jobTwoControl)
-//    val jcontrol: JobControl = new JobControl("Name")
-//    jcontrol.addJob(jobTwoControl)
-//    jcontrol.addJob(jobTwoFControl)
-//
-//    val runJControl: Thread = new Thread(jcontrol);
-//    runJControl.start();
 
 
     log.info("********** JOB 3 to be executed *************")
@@ -92,7 +69,7 @@ object DriverClass {
     val JobThreeConf = new Configuration
     // To generate the output of Map Reduce as Scala.
     JobThreeConf.set("mapred.textoutputformat.separatorText", ",")
-    val job3 = Job.getInstance(JobThreeConf,"Pattern Search across the file")
+    val job3 = Job.getInstance(JobThreeConf,"JOB 3")
     job3.setJarByClass(this.getClass)
     job3.setMapperClass(classOf[JobThreeMapper])
     job3.setCombinerClass(classOf[JobThreeReducer])
@@ -111,7 +88,7 @@ object DriverClass {
     val JobFourConf = new Configuration
     // To generate the output of Map Reduce as Scala.
     JobFourConf.set("mapred.textoutputformat.separatorText", ",")
-    val job4 = Job.getInstance(JobFourConf,"Pattern Search across the file")
+    val job4 = Job.getInstance(JobFourConf,"JOB 4")
     job4.setJarByClass(this.getClass)
     job4.setMapperClass(classOf[JobFourMapper])
     job4.setCombinerClass(classOf[JobFourReducer])
@@ -129,3 +106,33 @@ object DriverClass {
 }
 
 // (job3.waitForCompletion(true)) && (job1.waitForCompletion(true)) &&  && (job4.waitForCompletion(true))
+
+
+/*
+    log.info("********** Job2 Final to be executed *************")
+    // Job 2: Perform Map Reduce on the input
+    // Instance of Hadoop Configuration
+    val JobTwoFConf = new Configuration
+    // To generate the output of Map Reduce as Scala.
+    JobTwoFConf.set("mapred.textoutputformat.separatorText", ",")
+    val job2f = Job.getInstance(JobTwoFConf,"JOB 2 FINAL")
+    job2f.setJarByClass(this.getClass)
+    job2f.setMapperClass(classOf[JobTwoFinalMapper])
+    job2.setNumReduceTasks(0)
+    job2.setSortComparatorClass(classOf[IntWritable.Comparator])
+    job2f.setOutputKeyClass(classOf[IntWritable])
+    job2f.setOutputValueClass(classOf[Text]);
+    FileInputFormat.addInputPath(job2f,  new Path(out, "out1"))
+    FileOutputFormat.setOutputPath(job2f,  new Path(args(1)+"/job2/final"))
+    val jobTwoFControl = new ControlledJob(JobTwoFConf)
+
+
+    jobTwoFControl.addDependingJob(jobTwoControl)
+    val jcontrol: JobControl = new JobControl("Job2")
+    jcontrol.addJob(jobTwoControl)
+    jcontrol.addJob(jobTwoFControl)
+
+    val runJControl: Thread = new Thread(jcontrol);
+    runJControl.start();
+
+*/

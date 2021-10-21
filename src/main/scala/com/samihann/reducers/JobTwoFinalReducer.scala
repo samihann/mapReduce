@@ -14,10 +14,7 @@ import scala.util.matching.Regex
 
 class JobTwoFinalReducer extends Reducer[IntWritable,Text,Text,IntWritable] {
   override def reduce(key: IntWritable, values: Iterable[Text], context: Reducer[IntWritable, Text, Text, IntWritable]#Context): Unit = {
-    val a = values.toString
-    val newKey = new Text()
-    newKey.set(a)
-    context.write(newKey, key)
+    val a = values.asScala.toString
+    context.write(new Text(a),key)
 
-  }
-}
+}}

@@ -32,15 +32,6 @@ class JobTwoFinalMapper extends Mapper[Text, IntWritable, IntWritable, Text] {
 
 
     override def map(key: Text, value: IntWritable, context: Mapper[Text, IntWritable, IntWritable, Text]#Context): Unit = {
-      log.info("Starting Map Function")
-//      val itr = new StringTokenizer(value.toString,"\n")
-//      while (itr.hasMoreTokens()) {
-//        val newLine = itr.nextToken()
-//        val array = newLine.toString
-//        val newValue = new Text()
-//        newValue.set(array)
-//        context.write(new IntWritable(1),newValue)
-//      }
 
       context.write(value,key)
 

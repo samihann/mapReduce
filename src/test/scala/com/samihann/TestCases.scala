@@ -74,6 +74,7 @@ class TestCases extends AnyFunSuite {
       case Some(s) => {
         assert(!s.isEmpty)
       }
+      case None =>
     }
 
   }
