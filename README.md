@@ -4,6 +4,8 @@
 ## Name: Samihan Nandedkar
 ### UIN: 667140409
 
+Please find below the video explaining the execution and deployment for project: https://youtu.be/CeYS3syRkN0
+
 ### Output
 
 * Please refer to docs directory to get the latest jar file and input log file. 
