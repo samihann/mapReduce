@@ -1,8 +1,4 @@
-# Distribution Computation Problem (HW-2)
-### Description: The goal of this homework is for students to gain experience with solving a distributed computational problem using cloud computing technologies.
-( CS441 | Fall 2021 )
-## Name: Samihan Nandedkar
-### UIN: 667140409
+# Distribution Computation Problem 
 
 Please find below the video explaining the execution and deployment for project: https://youtu.be/CeYS3syRkN0
 
